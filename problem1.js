@@ -1,7 +1,7 @@
 
 url = 'http://localhost:8080/'
 var moon = d3.select('#basemoon');
-moon.on("click", function (e) {
+moon.on('click', function (e) {
     var image = e.target;
     rect = image.getBoundingClientRect();
     offsetX = e.clientX - rect.left;
@@ -19,13 +19,16 @@ moon.on("click", function (e) {
     document.getElementById('regionYT').value = coordY + 5
     displayImages();
     createImages();
+    
 })
 
 function displayImages(){
+    document.getElementById('contourimg').src = '';
+    document.getElementById('threeD').src = '';
     document.getElementById('contourimg').src = 'countourlines.png';
     document.getElementById('threeD').src = 'threeDperspective.png';
 }
-
+var a = 1;
 function createImages(){
     var regionXL = document.getElementById('regionXL').value;
     var regionXR = document.getElementById('regionXR').value;
@@ -39,6 +42,7 @@ function createImages(){
     var viewElevation = document.getElementById('viewElevation').value;
     console.log([regionXL,regionXR,regionYB,regionYT],colourmap,quality,contourinterval,contourannotation,viewAzimuth,viewElevation)
     async function getImages() {
+        a = a  +1
         let x = await fetch(url + new URLSearchParams({
             regionXL: regionXL,
             regionXR: regionXR,
@@ -50,11 +54,10 @@ function createImages(){
             cAnnotation:contourannotation,
             viewAzimuth:viewAzimuth,
             viewElevation:viewElevation,
-            }));
-      }
-    getImages().then(
-        function(){
-        displayImages();
-        console.log('Done');
-        })
+            a:a
+            })).catch(error => {
+                displayImages();
+            });
+    }
+    getImages();
 }

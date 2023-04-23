@@ -60,24 +60,32 @@ def threeDPerspective(displacement,region,viewAzimuth,viewElevation,cmap,output)
     fig.savefig(output)
 
 #threeDPerspective('ldem_4_uint.tif',[0,10,0,10],135, 30,'geo','threeDperspective.png')
+
+
 hostName = "localhost"
 serverPort = 8080
+timestamps = []
 class MyServer(BaseHTTPRequestHandler):
     def do_GET(self):
         params = self.path.split('&')
-        region = [float(params[0][10:]),float(params[1][9:]),float(params[2][9:]),float(params[3][9:])]
-        cmap = params[4][5:]
-        if params[5][8:] == 'low':
-            displacement = 'ldem_4_uint.tif'
+        if params not in timestamps:
+            region = [float(params[0][10:]),float(params[1][9:]),float(params[2][9:]),float(params[3][9:])]
+            cmap = params[4][5:]
+            if params[5][8:] == 'low':
+                displacement = 'ldem_4_uint.tif'
+            else:
+                displacement = 'ldem_16_uint.tif'
+            interval = int(params[6][10:])
+            annotation = int(params[7][12:])
+            viewAzimuth = int(params[8][12:])
+            viewElevation = int(params[9][14:])
+            contourLines(displacement,region,interval,annotation,cmap,'countourLines.png')
+            threeDPerspective(displacement,region,viewAzimuth,viewElevation,cmap,'threeDperspective.png')
+            timestamps.append(params)
+            self.send_response(200)
         else:
-            displacement = 'ldem_16_uint.tif'
-        interval = int(params[6][10:])
-        annotation = int(params[7][12:])
-        viewAzimuth = int(params[8][12:])
-        viewElevation = int(params[9][14:])
-        contourLines(displacement,region,interval,annotation,cmap,'countourLines.png')
-        threeDPerspective(displacement,region,viewAzimuth,viewElevation,cmap,'threeDperspective.png')
-        self.send_response(200)
+            o = 1
+        return
 
 if __name__ == "__main__":        
     webServer = HTTPServer((hostName, serverPort), MyServer)
