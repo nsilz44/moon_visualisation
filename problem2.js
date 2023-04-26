@@ -154,7 +154,7 @@ svg.append("g")
     coordX = (d.x-200) * (360/(width));
     coordY = ((d.y-76) * (140/(height)) - 70) * -1;
     tooltip
-      .html("At latitude: "+ d.target.__data__.x + "° and longitude: "+ d.target.__data__.y+"° the elevation is " +d.target.__data__.z+'m')
+      .html("At latitude: "+ d.target.__data__.x + "°, longitude: "+ d.target.__data__.y+"° the elevation is " +d.target.__data__.z+'m')
       .style("left", (d.x+20) + "px")
       .style("top", (d.y+10) + "px")
   }
@@ -163,7 +163,6 @@ svg.append("g")
       .style("opacity", 0)
     d3.select(this)
       .style("stroke", "none")
-      .style("opacity", 0.8)
   }
 
   svg.selectAll()
@@ -177,7 +176,6 @@ svg.append("g")
       .style("fill", function(d) { return myColor(d.z)} )
       .style("stroke-width", 4)
       .style("stroke", "none")
-      .style("opacity", 0.8)
     .on("click", click)
     .on("mouseleave", mouseleave)
     console.log('loaded')
@@ -232,16 +230,15 @@ barsvg.append("g")
       .style("stroke", "black")
       .style("opacity", 1)
     bartooltip
-      .html("At latitude: "+ d.target.__data__.x + "° and longitude: "+ d.target.__data__.y+"° the elevation is " +d.target.__data__.z+'m')
+      .html("At latitude: "+ d.target.__data__.x + "°, longitude: "+ d.target.__data__.y+"° the elevation is " +d.target.__data__.z+'m')
       .style("left", (d.x) + "px")
-      .style("top", (d.y+300) + "px")
+      .style("top", (d.y+650) + "px")
   }
   var barmouseleave = function(d) {
     bartooltip
       .style("opacity", 0)
     d3.select(this)
       .style("stroke", "none")
-      .style("opacity", 0.8)
   }
 //Bars
 barsvg.selectAll()
@@ -292,6 +289,37 @@ var bubblesvg = d3.select("#bubblechart")
   var bubblez = d3.scaleLinear()
     .domain([minLegend, maxLegend])
     .range([ 1, 40]);
+
+    // create a tooltip
+ var bubbletooltip = d3.select("#bubblechart")
+ .append("div")
+ .style("opacity", 0)
+ .attr("class", "tooltip")
+ .style("background-color", "white")
+ .style("border", "solid")
+ .style("border-width", "2px")
+ .style("border-radius", "5px")
+ .style("padding", "5px")
+
+  // Three function that change the tooltip when user hover / move / leave a cell
+  var bubbleclick = function(d) {
+    bubbletooltip
+      .style("opacity", 1)
+    d3.select(this)
+      .style("stroke", "black")
+      .style("opacity", 1)
+    bubbletooltip
+      .html(d.target.__data__.name)
+      .style("left", (d.x) + "px")
+      .style("top", (d.y+650) + "px")
+  }
+  var bubblemouseleave = function(d) {
+    bubbletooltip
+      .style("opacity", 0)
+    d3.select(this)
+      .style("stroke", "none")
+      .style('opacity','0.7')
+  }
   
   // Add dots
   bubblesvg.append('g')
@@ -305,6 +333,8 @@ var bubblesvg = d3.select("#bubblechart")
       .style("fill", function(d){return myColor(d.z);})
       .style("opacity", "0.7")
       .attr("stroke", "black")
+      .on("click", bubbleclick)
+      .on("mouseleave", bubblemouseleave)
     // The scale you use for bubble size
 
 // Add legend: circles
