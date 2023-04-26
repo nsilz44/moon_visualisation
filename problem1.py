@@ -18,9 +18,9 @@ def contourLines(displacement,region,interval,annotation,cmap,output_file):
     if cmap != 'none':
         fig.grdimage(grid=data,cmap=cmap,frame=True,projection='M15c',region=region)
     if annotation != 0:
-        fig.grdcontour(grid=data,interval=interval,projection='M15c',annotation=annotation,region=region)
+        fig.grdcontour(grid=data,interval=interval,frame=True,projection='M15c',annotation=annotation,region=region)
     else:
-        fig.grdcontour(grid=data,interval=interval,projection='M15c',region=region)
+        fig.grdcontour(grid=data,interval=interval,frame=True,projection='M15c',region=region)
     if cmap != 'none':
         fig.colorbar(frame=["x+lelevation", "y+lm"])
     fig.savefig(output_file)
@@ -78,7 +78,7 @@ class MyServer(BaseHTTPRequestHandler):
             interval = int(params[6][10:])
             annotation = int(params[7][12:])
             viewAzimuth = int(params[8][12:])
-            viewElevation = int(params[9][14:])
+            viewElevation = float(params[9][14:])
             contourLines(displacement,region,interval,annotation,cmap,'countourLines.png')
             threeDPerspective(displacement,region,viewAzimuth,viewElevation,cmap,'threeDperspective.png')
             timestamps.append(params)

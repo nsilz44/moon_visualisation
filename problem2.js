@@ -1,8 +1,8 @@
 
 // set the dimensions and margins of the graph
-var margin = {top: 80, right: 25, bottom: 30, left: 40},
-  width = 450 - margin.left - margin.right,
-  height = 450 - margin.top - margin.bottom;
+var margin = {top: 78, right: 15, bottom: 12, left: 78},
+  width = 1296 - margin.left - margin.right,
+  height = 716 - margin.top - margin.bottom;
 
 // append the svg object to the body of the page
 var svg = d3.select("#moon")
@@ -12,42 +12,46 @@ var svg = d3.select("#moon")
 .append("g")
   .attr("transform",
         "translate(" + margin.left + "," + margin.top + ")");
+
+
 var a = 1
 //Read the data
-d3.csv('high.csv', function(data) {
-     console.log(data)
-  // Labels of row and columns -> unique identifier of the column called 'group' and 'variable'
-  var myGroups = d3.map(data, function(d){return d.x;}).keys()
-  var myVars = d3.map(data, function(d){return d.y;}).keys()
+async function loadgraphs(){
+  var data = await d3.csv("lower.csv");
+  loadgraph(data);
+}
 
+function loadgraph(data) {
+     //console.log(data)
+  // Labels of row and columns -> unique identifier of the column called 'group' and 'variable'
+  var myGroups = data.map(data => data.x).filter((value, index, self) => self.indexOf(value) === index)
+  var myVars = data.map(data => data.y).filter((value, index, self) => self.indexOf(value) === index)
+  var zdomain = data.map(data => data.z).filter((value, index, self) => self.indexOf(value) === index)
+  
   // Build X scales and axis:
   var x = d3.scaleBand()
-    .range([ 0, width ])
-    .domain(myGroups)
-    .padding(0.05);
-  svg.append("g")
-    .style("font-size", 15)
-    .attr("transform", "translate(0," + height + ")")
-    .call(d3.axisBottom(x).tickSize(0))
-    .select(".domain").remove()
+  .range([ 0, width  ])
+  .domain(myGroups)
+  .padding(0.01);
+svg.append("g")
+  .attr("transform", "translate(0," + height + ")")
+  .style("font-size", 0)
+  .call(d3.axisBottom(x).tickSize(0).ticks(10))
+  
 
-  // Build Y scales and axis:
   var y = d3.scaleBand()
-    .range([ height, 0 ])
-    .domain(myVars)
-    .padding(0.05);
-  svg.append("g")
-    .style("font-size", 15)
-    .call(d3.axisLeft(y).tickSize(0))
-    .select(".domain").remove()
+  .range([ height, 0 ])
+  .domain(myVars)
+  .padding(0.01);
+svg.append("g")
+.style("font-size", 0)
+  .call(d3.axisLeft(y).tickSize(0).ticks(10))
 
-  // Build color scale
-  var myColor = d3.scaleSequential()
-    .interpolator(d3.interpolateInferno)
-    .domain([1,100000])
-
+  var myColor = d3.scaleLinear()
+  .range(["white", "#69b3a2"])
+  .domain(zdomain)
   // create a tooltip
-  var tooltip = d3.select("#my_dataviz")
+  var tooltip = d3.select("#moon")
     .append("div")
     .style("opacity", 0)
     .attr("class", "tooltip")
@@ -58,18 +62,18 @@ d3.csv('high.csv', function(data) {
     .style("padding", "5px")
 
   // Three function that change the tooltip when user hover / move / leave a cell
-  var mouseover = function(d) {
+  var click = function(d) {
     tooltip
       .style("opacity", 1)
     d3.select(this)
       .style("stroke", "black")
       .style("opacity", 1)
-  }
-  var mousemove = function(d) {
+    coordX = (d.x-200) * (360/(width));
+    coordY = ((d.y-76) * (140/(height)) - 70) * -1;
     tooltip
-      .html("The exact value of<br>this cell is: " + d.z)
-      .style("left", (d3.mouse(this)[0]+70) + "px")
-      .style("top", (d3.mouse(this)[1]) + "px")
+      .html("The elevation is " +d.target.__data__.z+'m')
+      .style("left", (d.x+20) + "px")
+      .style("top", (d.y+10) + "px")
   }
   var mouseleave = function(d) {
     tooltip
@@ -79,40 +83,20 @@ d3.csv('high.csv', function(data) {
       .style("opacity", 0.8)
   }
 
-  // add the squares
   svg.selectAll()
-    .data(data, function(d) {return d.x+':'+d.y;})
-    .enter()
-    .append("rect")
+      .data(data, function(d) {return d.x+':'+d.y;})
+      .enter()
+      .append("rect")
       .attr("x", function(d) { return x(d.x) })
       .attr("y", function(d) { return y(d.y) })
-      .attr("rx", 4)
-      .attr("ry", 4)
       .attr("width", x.bandwidth() )
       .attr("height", y.bandwidth() )
       .style("fill", function(d) { return myColor(d.z)} )
       .style("stroke-width", 4)
       .style("stroke", "none")
       .style("opacity", 0.8)
-    .on("mouseover", mouseover)
-    .on("mousemove", mousemove)
+    .on("click", click)
     .on("mouseleave", mouseleave)
-})
-
-// Add title to graph
-svg.append("text")
-        .attr("x", 0)
-        .attr("y", -50)
-        .attr("text-anchor", "left")
-        .style("font-size", "22px")
-        .text("A d3.js heatmap");
-
-// Add subtitle to graph
-svg.append("text")
-        .attr("x", 0)
-        .attr("y", -20)
-        .attr("text-anchor", "left")
-        .style("font-size", "14px")
-        .style("fill", "grey")
-        .style("max-width", 400)
-        .text("A short description of the take-away message of this chart.");
+    console.log('loaded')
+}
+loadgraphs()
