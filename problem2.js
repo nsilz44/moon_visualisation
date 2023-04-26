@@ -18,10 +18,11 @@ var a = 1
 //Read the data
 async function loadgraphs(){
   var data = await d3.csv("lower.csv");
-  loadgraph(data);
+  var apollodata = await d3.csv("apollo.csv");
+  loadgraph(data,apollodata);
 }
 
-function loadgraph(data) {
+function loadgraph(data,apollodata) {
      //console.log(data)
      data.forEach(function(d) {
       d.z = +d.z;
@@ -37,7 +38,7 @@ function loadgraph(data) {
   var x = d3.scaleBand()
   .range([ 0, width  ])
   .domain(myGroups)
-  .padding(0.01);
+  .padding(0.0001);
 svg.append("g")
   .attr("transform", "translate(0," + height + ")")
   .style("font-size", 0)
@@ -47,7 +48,7 @@ svg.append("g")
   var y = d3.scaleBand()
   .range([ height, 0 ])
   .domain(myVars)
-  .padding(0.01);
+  .padding(0.0001);
 svg.append("g")
 .style("font-size", 0)
   .call(d3.axisLeft(y).tickSize(0).ticks(10))
@@ -180,5 +181,96 @@ svg.append("g")
     .on("click", click)
     .on("mouseleave", mouseleave)
     console.log('loaded')
+    // set the dimensions and margins of the graph
+var barmargin = {top: 20, right: 30, bottom: 40, left: 90},
+barwidth = 460 - barmargin.left - barmargin.right,
+barheight = 400 - barmargin.top - barmargin.bottom;
+
+// append the svg object to the body of the page
+var barsvg = d3.select("#barchart")
+.append("svg")
+.attr("width", barwidth + margin.left + margin.right)
+.attr("height", barheight + margin.top + margin.bottom)
+.append("g")
+.attr("transform",
+      "translate(" + margin.left + "," + margin.top + ")");
+// Add X axis
+var barx = d3.scaleLinear()
+.domain([0, maxLegend])
+.range([ 0, barwidth]);
+barsvg.append("g")
+.attr("transform", "translate(0," +0 + ")")
+.call(d3.axisTop(barx))
+.selectAll("text")
+  .attr("transform", "translate(-10,0)rotate(45)")
+  .style("text-anchor", "end");
+
+// Y axis
+var bary = d3.scaleBand()
+.range([ 0, barheight ])
+.domain(apollodata.map(function(d) { return d.name; }))
+.padding(.1);
+barsvg.append("g")
+.call(d3.axisLeft(bary))
+
+//Bars
+barsvg.selectAll()
+.data(apollodata)
+.enter()
+.append("rect")
+.attr("x", barx(0) )
+.attr("y", function(d) { return bary(d.name); })
+.attr("width", function(d) { return barx(d.z); })
+.attr("height", bary.bandwidth() )
+.attr("fill", function(d) {return myColor(d.z);})
+
+
+// set the dimensions and margins of the graph
+var bubblemargin = {top: 10, right: 20, bottom: 30, left: 50},
+    bubblewidth = 500 - bubblemargin.left - bubblemargin.right,
+    bubbleheight = 420 - bubblemargin.top - bubblemargin.bottom;
+
+// append the svg object to the body of the page
+var bubblesvg = d3.select("#bubblechart")
+  .append("svg")
+    .attr("width", bubblewidth + bubblemargin.left + bubblemargin.right)
+    .attr("height", bubbleheight + bubblemargin.top + bubblemargin.bottom)
+  .append("g")
+    .attr("transform",
+          "translate(" + bubblemargin.left + "," + bubblemargin.top + ")");
+  
+  // Add X axis
+  var bubblex = d3.scaleLinear()
+    .domain([0, 360])
+    .range([ 0, bubblewidth ]);
+  bubblesvg.append("g")
+    .attr("transform", "translate(0," + bubbleheight + ")")
+    .call(d3.axisBottom(bubblex));
+
+  // Add Y axis
+  var bubbley = d3.scaleLinear()
+    .domain([-70, 70])
+    .range([ bubbleheight, 0]);
+  bubblesvg.append("g")
+    .call(d3.axisLeft(bubbley));
+
+  // Add a scale for bubble size
+  var bubblez = d3.scaleLinear()
+    .domain([minLegend, maxLegend])
+    .range([ 1, 40]);
+  
+  // Add dots
+  bubblesvg.append('g')
+    .selectAll("dot")
+    .data(apollodata)
+    .enter()
+    .append("circle")
+      .attr("cx", function (d) { return bubblex(d.x); } )
+      .attr("cy", function (d) { return bubbley(d.y); } )
+      .attr("r", function (d) { return bubblez(d.z); } )
+      .style("fill", function(d){return myColor(d.z);})
+      .style("opacity", "0.7")
+      .attr("stroke", "black")
 }
 loadgraphs()
+
