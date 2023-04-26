@@ -154,7 +154,7 @@ svg.append("g")
     coordX = (d.x-200) * (360/(width));
     coordY = ((d.y-76) * (140/(height)) - 70) * -1;
     tooltip
-      .html("The elevation is " +d.target.__data__.z+'m')
+      .html("At latitude: "+ d.target.__data__.x + "° and longitude: "+ d.target.__data__.y+"° the elevation is " +d.target.__data__.z+'m')
       .style("left", (d.x+20) + "px")
       .style("top", (d.y+10) + "px")
   }
@@ -213,6 +213,36 @@ var bary = d3.scaleBand()
 barsvg.append("g")
 .call(d3.axisLeft(bary))
 
+ // create a tooltip
+ var bartooltip = d3.select("#barchart")
+ .append("div")
+ .style("opacity", 0)
+ .attr("class", "tooltip")
+ .style("background-color", "white")
+ .style("border", "solid")
+ .style("border-width", "2px")
+ .style("border-radius", "5px")
+ .style("padding", "5px")
+
+  // Three function that change the tooltip when user hover / move / leave a cell
+  var barclick = function(d) {
+    bartooltip
+      .style("opacity", 1)
+    d3.select(this)
+      .style("stroke", "black")
+      .style("opacity", 1)
+    bartooltip
+      .html("At latitude: "+ d.target.__data__.x + "° and longitude: "+ d.target.__data__.y+"° the elevation is " +d.target.__data__.z+'m')
+      .style("left", (d.x) + "px")
+      .style("top", (d.y+300) + "px")
+  }
+  var barmouseleave = function(d) {
+    bartooltip
+      .style("opacity", 0)
+    d3.select(this)
+      .style("stroke", "none")
+      .style("opacity", 0.8)
+  }
 //Bars
 barsvg.selectAll()
 .data(apollodata)
@@ -223,6 +253,10 @@ barsvg.selectAll()
 .attr("width", function(d) { return barx(d.z); })
 .attr("height", bary.bandwidth() )
 .attr("fill", function(d) {return myColor(d.z);})
+.on("click", barclick)
+    .on("mouseleave", barmouseleave)
+
+
 
 
 // set the dimensions and margins of the graph
@@ -271,6 +305,48 @@ var bubblesvg = d3.select("#bubblechart")
       .style("fill", function(d){return myColor(d.z);})
       .style("opacity", "0.7")
       .attr("stroke", "black")
+    // The scale you use for bubble size
+
+// Add legend: circles
+var valuesToShow = [10000, 22500, 35000]
+var xCircle = 800
+var xLabel = 900
+var yCircle = 750
+svg
+.selectAll("legend")
+.data(valuesToShow)
+.enter()
+.append("circle")
+  .attr("cx", xCircle)
+  .attr("cy", function(d){ return yCircle - bubblez(d) } )
+  .attr("r", function(d){ return bubblez(d) })
+  .style("fill", "none")
+  .attr("stroke", "black")
+
+// Add legend: segments
+svg
+.selectAll("legend")
+.data(valuesToShow)
+.enter()
+.append("line")
+  .attr('x1', function(d){ return xCircle + bubblez(d) } )
+  .attr('x2', xLabel)
+  .attr('y1', function(d){ return yCircle - bubblez(d) } )
+  .attr('y2', function(d){ return yCircle - bubblez(d) } )
+  .attr('stroke', 'black')
+  .style('stroke-dasharray', ('2,2'))
+
+// Add legend: labels
+svg
+.selectAll("legend")
+.data(valuesToShow)
+.enter()
+.append("text")
+  .attr('x', xLabel)
+  .attr('y', function(d){ return yCircle - bubblez(d) } )
+  .text( function(d){ return d +'m'} )
+  .style("font-size", 5)
+  .attr('alignment-baseline', 'middle')
 }
 loadgraphs()
 
