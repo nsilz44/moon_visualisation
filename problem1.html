@@ -35,8 +35,16 @@
                 </div>
             </div>
         </div> 
-        <label class="form-label">HeatMap type</label> 
+        <label class="form-label">Heat map type</label> 
         <select class="form-select" id="colourmap">
+            <option>cool</option>
+            <option>hot</option>
+            <option>magma</option>
+            <option>ocean</option>
+            <option>drywet</option>
+            <option>speed</option>
+            <option>cubhelix</option>
+            <option>copper</option>
             <option>haxby</option>
             <option>geo</option>
             <option>gray</option>
@@ -51,22 +59,23 @@
     <div class="container">
         <h1>Contour visualisation specific settings</h1>
         <label class="form-label">Contour intervals levels (per m)</label>
-        <input class="form-control" value=1000 id="contourinterval">
-        <label class="form-label">Contour Annotations levels (per m)</label>
-        <input class="form-control" value=3000 id="contourannotation">
+        <input class="form-control" value=200 id="contourinterval">
+        <label class="form-label">Contour annotations levels (per m) put 0 for no annotations</label>
+        <input class="form-control" value=1000 id="contourannotation">
     </div>
     <div class="container">
         <h1>3d-perspective visualisation specific settings</h1>
         <label class="form-label">view Azimuth</label>
         <input class="form-control" value=135 id="viewAzimuth">
-        <label class="form-label">viewElevation</label>
+        <label class="form-label">view Elevation</label>
         <input class="form-control" value=30 id="viewElevation">
     </div>
     <div class="container">
         <button type="button" id="mainButton" onclick=createImages() class="btn btn-primary">Update graphics</button>
     </div>
     <div class="container">
-        <h1>Base moon</h1>
+        <h1>Moon</h1>
+        <h4>Click to get a region for the visualisations below</h4>
         <img src="BaseMoon.png" id="basemoon" class="img-fluid" alt="Moon photo"> 
     </div> 
     <div class="container" id="Contour">

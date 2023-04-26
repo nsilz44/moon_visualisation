@@ -86,7 +86,7 @@ class MyServer(BaseHTTPRequestHandler):
         else:
             o = 1
         return
-
+print('open problem1.html')
 if __name__ == "__main__":        
     webServer = HTTPServer((hostName, serverPort), MyServer)
     print("Server started http://%s:%s" % (hostName, serverPort))
