@@ -52,8 +52,8 @@ svg.append("g")
 svg.append("g")
 .style("font-size", 0)
   .call(d3.axisLeft(y).tickSize(0).ticks(10))
-    mincolour  = '#a0f7b6'
-    maxcolour = '#000a02'
+    mincolour  = '#f407dd'
+    maxcolour = '#b2e509'
   minLegend = d3.min(zdomain);
   maxLegend = d3.max(zdomain);
   var myColor = d3.scaleLinear()
@@ -128,7 +128,7 @@ svg.append("g")
     .attr("class", "legendTitle")
     .attr("x", 0)
     .attr("y", 2)
-    .text("Elevation");
+    .text("Elevation(m)");
   //Set scale for x-axis
   var xScale2 = d3.scaleLinear()
     .range([0, legendWidth])
@@ -154,7 +154,7 @@ svg.append("g")
     coordX = (d.x-200) * (360/(width));
     coordY = ((d.y-76) * (140/(height)) - 70) * -1;
     tooltip
-      .html("At latitude: "+ d.target.__data__.x + "°, longitude: "+ d.target.__data__.y+"° the elevation is " +d.target.__data__.z+'m')
+      .html("At latitude: "+ d.target.__data__.y + "°, longitude: "+ d.target.__data__.x+"° the elevation is " +d.target.__data__.z+'m')
       .style("left", (d.x+20) + "px")
       .style("top", (d.y+10) + "px")
   }
@@ -202,7 +202,11 @@ barsvg.append("g")
 .selectAll("text")
   .attr("transform", "translate(-10,0)rotate(45)")
   .style("text-anchor", "end");
-
+barsvg.append("text")      // text label for the x axis
+.attr("x", 200)
+.attr("y",  -50)
+.style("text-anchor", "middle")
+.text("Elevation(m)");
 // Y axis
 var bary = d3.scaleBand()
 .range([ 0, barheight ])
@@ -230,7 +234,7 @@ barsvg.append("g")
       .style("stroke", "black")
       .style("opacity", 1)
     bartooltip
-      .html("At latitude: "+ d.target.__data__.x + "°, longitude: "+ d.target.__data__.y+"° the elevation is " +d.target.__data__.z+'m')
+      .html("At latitude: "+ d.target.__data__.y + "°, longitude: "+ d.target.__data__.x+"° the elevation is " +d.target.__data__.z+'m')
       .style("left", (d.x) + "px")
       .style("top", (d.y+650) + "px")
   }
@@ -257,7 +261,7 @@ barsvg.selectAll()
 
 
 // set the dimensions and margins of the graph
-var bubblemargin = {top: 10, right: 20, bottom: 30, left: 50},
+var bubblemargin = {top: 10, right: 20, bottom: 60, left: 50},
     bubblewidth = 500 - bubblemargin.left - bubblemargin.right,
     bubbleheight = 420 - bubblemargin.top - bubblemargin.bottom;
 
@@ -277,6 +281,11 @@ var bubblesvg = d3.select("#bubblechart")
   bubblesvg.append("g")
     .attr("transform", "translate(0," + bubbleheight + ")")
     .call(d3.axisBottom(bubblex));
+    bubblesvg.append("text")      // text label for the x axis
+    .attr("x", 200)
+    .attr("y",  385)
+    .style("text-anchor", "middle")
+    .text("Longitude(°)");
 
   // Add Y axis
   var bubbley = d3.scaleLinear()
@@ -284,6 +293,12 @@ var bubblesvg = d3.select("#bubblechart")
     .range([ bubbleheight, 0]);
   bubblesvg.append("g")
     .call(d3.axisLeft(bubbley));
+    bubblesvg.append("text")      // text label for the x axis
+    .attr("x", -175)
+    .attr("y",  -25)
+    .attr("transform", "translate(0,0)rotate(-90)")
+    .style("text-anchor", "middle")
+    .text("Latitude(°)");
 
   // Add a scale for bubble size
   var bubblez = d3.scaleLinear()
