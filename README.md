@@ -13,3 +13,7 @@ Type in
 python problem2.py
 ```
 Then navigate to [http://localhost:8000/problem2.html](http://localhost:8000/problem2.html)
+
+# Example pictures
+![Image](threeDperspective.png)
+![Image](countourLines.png)
